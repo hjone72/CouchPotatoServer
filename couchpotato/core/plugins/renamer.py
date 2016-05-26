@@ -818,8 +818,8 @@ Remove it if you want it to be renamed (again, or at least let it try again)
         dest = sp(dest)
         try:
 
-            if os.path.exists(dest) and os.path.isfile(dest):
-                raise Exception('Destination "%s" already exists' % dest)
+            #if os.path.exists(dest) and os.path.isfile(dest):
+            #    raise Exception('Destination "%s" already exists' % dest)
 
             move_type = self.conf('file_action')
             if use_default:
@@ -828,7 +828,19 @@ Remove it if you want it to be renamed (again, or at least let it try again)
             if move_type not in ['copy', 'link']:
                 try:
                     log.info('Moving "%s" to "%s"', (old, dest))
-                    shutil.move(old, dest)
+                    exists_new = os.path.exists(dest)
+                    if exists_new:
+                        log.info('File already exists at "%s". Overwriting it.', (dest))
+                    shutil.copy(old, dest)
+                    exists = os.path.exists(dest)
+                    if exists and os.path.getsize(old) == os.path.getsize(dest):
+                        #file successfully copied. Deleting now.
+                        log.info('File was copied successfully. Deleting original')
+                        os.remove(old)
+                        log.info('Old file was deleted. "%s"', (old))
+                        exists_old = os.path.exists(old)
+                        if exists_old:
+                            log.error('Copied file but unable to delete "&s".'
                 except:
                     exists = os.path.exists(dest)
                     if exists and os.path.getsize(old) == os.path.getsize(dest):
