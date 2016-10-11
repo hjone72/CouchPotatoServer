@@ -841,6 +841,9 @@ Remove it if you want it to be renamed (again, or at least let it try again)
                         exists_old = os.path.exists(old)
                         if exists_old:
                             log.error('Copied file but unable to delete "&s".'
+                    else:
+                        log.error('Copied file is not the same size as the original. An error may have occured.')
+                    
                 except:
                     exists = os.path.exists(dest)
                     if exists and os.path.getsize(old) == os.path.getsize(dest):
